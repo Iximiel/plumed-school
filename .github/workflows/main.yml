@@ -17,7 +17,6 @@ jobs:
           path: |
             ~/opt
             ~/.ccache
-            ./_data
           key: ccache-${{ runner.os }}-${{ github.sha }}
           restore-keys: ccache-${{ runner.os }}-
       - name: Set paths
@@ -48,6 +47,14 @@ jobs:
             # GB: in addition, we install master version as plumed_master
             CXX="mpic++" .ci/install.plumed version=master suffix=_master repo=$PWD/plumed2.git
             ccache -s
+      - name: caches the install results
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            ~/opt
+            ./_data
+          key: build-${{ runner.os }}-${{ github.sha }}
+
   # This workflow contains a job called "build"
   build:
     needs: setup
@@ -66,9 +73,8 @@ jobs:
       with:
         path: |
           ~/opt
-          ~/.ccache
           ./_data
-        key: ccache-${{ runner.os }}-${{ github.sha }}
+        key: build-${{ runner.os }}-${{ github.sha }}
         fail-on-cache-miss: true
 
     - name: Set up Python 3.8
