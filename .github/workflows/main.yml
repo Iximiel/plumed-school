@@ -45,7 +45,6 @@ jobs:
             sudo apt install libfftw3-dev gsl-bin libgsl0-dev libboost-serialization-dev
             sudo apt install ccache
             sudo apt-get update
-            git clone --bare https://github.com/plumed/plumed2.git
             sudo ln -s ccache /usr/local/bin/mpic++
             export PATH=/usr/lib/ccache:${PATH}
             ccache -s
