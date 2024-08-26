@@ -17,6 +17,7 @@ jobs:
           path: |
             ~/opt
             ~/.ccache
+            ~/_data
           key: ccache-${{ runner.os }}-${{ github.sha }}
           restore-keys: ccache-${{ runner.os }}-
       - name: Set paths
@@ -66,6 +67,7 @@ jobs:
         path: |
           ~/opt
           ~/.ccache
+          ~/_data
         key: ccache-${{ runner.os }}-${{ github.sha }}
 
     - name: Set up Python 3.8
