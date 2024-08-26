@@ -105,8 +105,9 @@ jobs:
     - name: Install software
       run: |
         sudo apt update
-        sudo apt install mpi-default-bin
-        sudo apt install libfftw3 gsl-bin libgsl0 libboost-serialization
+        #shall we get non-dev version of these?
+        sudo apt install mpi-default-bin mpi-default-dev
+        sudo apt install libfftw3-dev gsl-bin libgsl0-dev libboost-serialization-dev
         sudo apt-get update
         pip install -r requirements.txt
     - name: Build manual
