@@ -12,13 +12,22 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/cache@v4
+      - name: calculate cache key for the compilation
+        id: get-key
+        run: |
+          git clone --bare https://github.com/plumed/plumed2.git
+          stable=$(cd plumed2.git ; git branch --list 'v2.*' --sort='version:refname'| sed "s/^ *//" | grep '^v2\.[0-9]*$' | tail -n 1)
+          echo "key=$(cd plumed2.git ; git rev-parse "$stable")-$(cd plumed2.git ; git rev-parse master)" >> $GITHUB_OUTPUT
+
+      - name: setting up or retrieving the compilation cache
+        uses: actions/cache@v4
         with:
           path: |
             ~/opt
             ~/.ccache
-          key: ccache-${{ runner.os }}-${{ github.sha }}
+          key: ccache-${{ runner.os }}-${{ steps.get-key.outputs.key }}
           restore-keys: ccache-${{ runner.os }}-
+
       - name: Set paths
         run: |
               echo "$HOME/opt/bin" >> $GITHUB_PATH
@@ -97,15 +106,10 @@ jobs:
     - name: Install software
       run: |
         sudo apt update
-        sudo apt install mpi-default-bin mpi-default-dev
-        sudo apt install libfftw3-dev gsl-bin libgsl0-dev libboost-serialization-dev
-        sudo apt install ccache
+        sudo apt install mpi-default-bin
+        sudo apt install libfftw3 gsl-bin libgsl0 libboost-serialization
         sudo apt-get update
         pip install -r requirements.txt
-        git clone --bare https://github.com/plumed/plumed2.git
-        sudo ln -s ccache /usr/local/bin/mpic++
-        export PATH=/usr/lib/ccache:${PATH}
-        ccache -s
     - name: Build manual
       run: | 
         python --version
