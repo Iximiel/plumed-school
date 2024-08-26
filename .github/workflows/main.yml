@@ -8,8 +8,47 @@ on: [push, pull_request]
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
+  setup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/opt
+            ~/.ccache
+          key: ccache-${{ runner.os }}-${{ github.sha }}
+          restore-keys: ccache-${{ runner.os }}-
+      - name: Set paths
+        run: |
+              echo "$HOME/opt/bin" >> $GITHUB_PATH
+              echo "CPATH=$HOME/opt/include:$HOME/opt/libtorch/include/torch/csrc/api/include/:$HOME/opt/libtorch/include/:$HOME/opt/libtorch/include/torch:$CPATH" >> $GITHUB_ENV
+              echo "INCLUDE=$HOME/opt/include:$HOME/opt/libtorch/include/torch/csrc/api/include/:$HOME/opt/libtorch/include/:$HOME/opt/libtorch/include/torch:$INCLUDE" >> $GITHUB_ENV
+              echo "LIBRARY_PATH=$HOME/opt/lib:$HOME/opt/libtorch/lib:$LIBRARY_PATH" >> $GITHUB_ENV
+              echo "LD_LIBRARY_PATH=$HOME/opt/lib:$HOME/opt/libtorch/lib:$LD_LIBRARY_PATH" >> $GITHUB_ENV
+              echo "PYTHONPATH=$HOME/opt/lib/plumed/python:$PYTHONPATH" >> $GITHUB_ENV
+              # needed to avoid MPI warning
+              echo "OMPI_MCA_btl=^openib" >> $GITHUB_ENV
+      - name: Install software
+        run: |
+            sudo apt update
+            sudo apt install mpi-default-bin mpi-default-dev
+            sudo apt install libfftw3-dev gsl-bin libgsl0-dev libboost-serialization-dev
+            sudo apt install ccache
+            sudo apt-get update
+            git clone --bare https://github.com/plumed/plumed2.git
+            sudo ln -s ccache /usr/local/bin/mpic++
+            export PATH=/usr/lib/ccache:${PATH}
+            ccache -s
+            .ci/install.libtorch
+            # version=master or version=f123f12f3 to select a specific version
+            # The ordering is by version, so 2.10 will be > than 2.1 
+            CXX="mpic++" .ci/install.plumed version="$(cd plumed2.git ; git branch --list 'v2.*' --sort='version:refname'| sed "s/^ *//" | grep '^v2\.[0-9]*$' | tail -n 1)" repo=$PWD/plumed2.git
+            # GB: in addition, we install master version as plumed_master
+            CXX="mpic++" .ci/install.plumed version=master suffix=_master repo=$PWD/plumed2.git
+            ccache -s
   # This workflow contains a job called "build"
   build:
+    needs: setup
     strategy:
       matrix:
         replica: [0, 1]
@@ -21,13 +60,12 @@ jobs:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v4
 
-    - uses: actions/cache@v4
+    - uses: actions/cache/restore@v4
       with:
         path: |
           ~/opt
           ~/.ccache
         key: ccache-${{ runner.os }}-${{ github.sha }}
-        restore-keys: ccache-${{ runner.os }}-
 
     - name: Set up Python 3.8
       uses: actions/setup-python@v5
@@ -57,13 +95,6 @@ jobs:
         git clone --bare https://github.com/plumed/plumed2.git
         sudo ln -s ccache /usr/local/bin/mpic++
         export PATH=/usr/lib/ccache:${PATH}
-        ccache -s
-        .ci/install.libtorch
-        # version=master or version=f123f12f3 to select a specific version
-        # The ordering is by version, so 2.10 will be > than 2.1 
-        CXX="mpic++" .ci/install.plumed version="$(cd plumed2.git ; git branch --list 'v2.*' --sort='version:refname'| sed "s/^ *//" | grep '^v2\.[0-9]*$' | tail -n 1)" repo=$PWD/plumed2.git
-        # GB: in addition, we install master version as plumed_master
-        CXX="mpic++" .ci/install.plumed version=master suffix=_master repo=$PWD/plumed2.git
         ccache -s
     - name: Build manual
       run: | 
