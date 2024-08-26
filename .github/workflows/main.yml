@@ -15,9 +15,9 @@ jobs:
       - uses: actions/cache@v4
         with:
           path: |
-            $HOME/opt
-            $HOME/.ccache
-            $GITHUB_WORKSPACE/_data
+            ~/opt
+            ~/.ccache
+            ./_data
           key: ccache-${{ runner.os }}-${{ github.sha }}
           restore-keys: ccache-${{ runner.os }}-
       - name: Set paths
@@ -65,10 +65,11 @@ jobs:
     - uses: actions/cache/restore@v4
       with:
         path: |
-          $HOME/opt
-          $HOME/.ccache
-          $GITHUB_WORKSPACE/_data
+          ~/opt
+          ~/.ccache
+          ./_data
         key: ccache-${{ runner.os }}-${{ github.sha }}
+        fail-on-cache-miss: true
 
     - name: Set up Python 3.8
       uses: actions/setup-python@v5
