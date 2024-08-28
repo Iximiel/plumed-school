@@ -1,0 +1,174 @@
+# file containing lesson database.
+- id: '24.002'
+  title: Trans-Cis isomerization in the ground and excited states using PLUMED
+  shortitle: 'Trans-Cis isome...'
+  path: lessons/24/002/data/NAVIGATION.html
+  instructors: Adriana Pietropaolo
+  description: A guide to perform ground and excited state simulations using PLUMED to simulate a trans to cis isomerization process.
+  ninputs: 1
+  nfail: 0
+  nfailm: 0
+  actions: BIASVALUE PBMETAD TORSION MATHEVAL CONSTANT WHOLEMOLECULES PRINT
+  modules: generic function bias colvar
+- id: '23.004'
+  title: Rewriting coordination CVs in CUDA
+  shortitle: 'Rewriting coord...'
+  path: lessons/23/004/data/NAVIGATION.html
+  instructors: Daniele Rapetti
+  description: How to implement a basic version of the coordination CV with CUDA
+  tags: developers, C++, parallelism, Cuda
+  ninputs: 0
+  nfail: 0
+  nfailm: 0
+  actions: 
+  modules: 
+- id: '23.002'
+  title: Introduction to the PLUMED parallel features for developers
+  shortitle: 'Introduction to...'
+  path: lessons/23/002/data/NAVIGATION.html
+  instructors: Daniele Rapetti
+  description: A simple presentation of some of the available features in PLUMED to simplify the interface with OpenMP and MPI. The lesson contains also a very simple example of how to implement a CV with CUDA.
+  tags: developers, C++, parallelism
+  ninputs: 0
+  nfail: 0
+  nfailm: 0
+  actions: 
+  modules: 
+- id: '22.017'
+  title: A Bayesian approach to integrate cryo-EM data into MD simulations with PLUMED
+  shortitle: 'A Bayesian appr...'
+  path: lessons/22/017/data/NAVIGATION.html
+  instructors: Samuel Hoff and Max Bonomi
+  description: How to use PLUMED to perform single-structure and ensemble refinement using cryo-EM maps and EMMIVox.
+  tags: masterclass-2022
+  ninputs: 2
+  nfail: 2
+  nfailm: 2
+  depends: 
+    - 21/001
+  actions: EMMIVOX BIASVALUE GROUP WHOLEMOLECULES PRINT MOLINFO
+  modules: generic isdb bias core
+- id: '22.013'
+  title: SASA module - The solvent accessible surface area of proteins as a collective variable, and the application of PLUMED for implicit solvent simulations
+  shortitle: 'SASA module - T...'
+  path: lessons/22/013/data/NAVIGATION.html
+  instructors: Andrea Arsiccio
+  description: An introduction to the SASA module and a description of how PLUMED can be used for implicit solvent simulations.
+  tags: masterclass-2022
+  ninputs: 4
+  nfail: 0
+  nfailm: 0
+  depends: 
+    - 21/001
+    - 21/004
+  actions: SUM BIASVALUE PARABETARMSD SECONDARY_STRUCTURE_RMSD ALPHARMSD LESS_THAN ANTIBETARMSD GYRATION PRINT MOLINFO SASA_HASEL LOWEST
+  modules: colvar function bias sasa generic secondarystructure
+- id: '22.010'
+  title: Hamiltonian replica exchange with PLUMED and GROMACS
+  shortitle: 'Hamiltonian rep...'
+  path: lessons/22/010/data/NAVIGATION.html
+  instructors: Giovanni Bussi
+  description: An introduction to running Hamiltonian replica exchange calculations using PLUMED and GROMACS.
+  tags: masterclass-2022
+  ninputs: 1
+  nfail: 0
+  nfailm: 0
+  depends: 
+    - 21/005
+  actions: PRINT MOLINFO TORSION
+  modules: generic colvar
+- id: '22.007'
+  title: Learning and enhancing fluctuations along information bottleneck for automated enhanced sampling
+  shortitle: 'Learning and en...'
+  path: lessons/22/007/data/NAVIGATION.html
+  instructors: Pratyush Tiwary
+  description: An introduction to the state predictive information bottleneck (SPIB) deep-learning-based framework for learning reaction coordinates from high dimensional molecular simulation trajectories.
+  tags: masterclass-2022
+  ninputs: 0
+  nfail: 0
+  nfailm: 0
+  actions: 
+  modules: 
+- id: '22.005'
+  title: Machine learning collective variables with PyTorch
+  shortitle: 'Machine learnin...'
+  path: lessons/22/005/data/NAVIGATION.html
+  instructors: Luigi Bonati
+  description: An introduction to designing data-driven CVs using two methods (DeepLDA and DeepTICA).
+  tags: masterclass-2022
+  ninputs: 1
+  nfail: 1
+  nfailm: 1
+  depends: 
+    - 21/001
+    - 22/003
+  actions: PRINT PYTORCH_MODEL TORSION
+  modules: generic pytorch colvar
+- id: '22.002'
+  title: Analysis of PLUMED output by Metadynminer
+  shortitle: 'Analysis of PLU...'
+  path: lessons/22/002/data/NAVIGATION.html
+  instructors: Vojtech Spiwok
+  description: An introduction to the R package Metadynminer which can be used to analyse the output from metadynamics simulations
+  tags: masterclass-2022
+  ninputs: 0
+  nfail: 0
+  nfailm: 0
+  depends: 
+    - 21/004
+  actions: 
+  modules: 
+- id: '21.006'
+  title: Dimensionality reduction
+  shortitle: 'Dimensionality ...'
+  path: lessons/21/006/data/NAVIGATION.html
+  instructors: Gareth Tribello
+  description: An introduction to techniques such as dimensionality reduction, path collective variables, and indistinguishability that you may need to use in your own research projects.
+  tags: masterclass-2021
+  ninputs: 11
+  nfail: 6
+  nfailm: 0
+  depends: 
+    - 21/001
+  actions: LANDMARK_SELECT_FPS UNITS FCCUBIC DUMPMULTICOLVAR PCA PARABETARMSD CLASSICAL_MDS SKETCHMAP PRINT MOLINFO COMMITTOR COORDINATIONNUMBER HISTOGRAM COLLECT_FRAMES MORE_THAN ALPHARMSD ANTIBETARMSD PROJECT_POINTS DUMPVECTOR TORSION PATH GROUP PCAVARS DUMPGRID RMSD DUMPPDB
+  modules: multicolvar mapping symfunc colvar landmarks gridtools setup dimred function core generic secondarystructure
+- id: '21.004'
+  title: Metadynamics
+  shortitle: 'Metadynamics'
+  path: lessons/21/004/data/NAVIGATION.html
+  instructors: Max Bonomi
+  description: How to calculate statistical averages and free energy surfaces using metadynamics
+  tags: masterclass-2021
+  ninputs: 4
+  nfail: 0
+  nfailm: 0
+  depends: 
+    - 21/003
+    - 21/002
+  actions: REWEIGHT_BIAS METAD TORSION HISTOGRAM DUMPGRID PRINT MOLINFO CONVERT_TO_FES
+  modules: gridtools bias generic colvar
+- id: '21.002'
+  title: Statistical errors in MD
+  shortitle: 'Statistical err...'
+  path: lessons/21/002/data/NAVIGATION.html
+  instructors: Gareth Tribello
+  description: How to calculate errors on averages calculated from unbiased and biased MD simulations using the method of block averages.
+  tags: masterclass-2021
+  ninputs: 8
+  nfail: 0
+  nfailm: 0
+  depends: 
+    - 21/001
+  actions: UNITS READ REWEIGHT_BIAS COORDINATIONNUMBER HISTOGRAM METAD CONSTANT UPPER_WALLS COM DUMPGRID DISTANCE RESTRAINT PRINT CUSTOM AVERAGE CONVERT_TO_FES
+  modules: vatom symfunc colvar gridtools function setup bias generic
+- id: '20.001'
+  title: Installing PLUMED
+  shortitle: 'Installing PLUM...'
+  path: lessons/20/001/data/NAVIGATION.html
+  instructors: Gareth Tribello
+  description: An interactive tutorial resource on compiling PLUMED and linking it with MD codes.
+  ninputs: 0
+  nfail: 0
+  nfailm: 0
+  actions: 
+  modules: 
