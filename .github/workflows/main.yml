@@ -66,6 +66,7 @@ jobs:
         CXX: 'ccache mpic++'
         version: '${{ steps.install.outputs.stable_plumed }}'
         repository: '${{ github.workspace }}/plumed2.git'
+        dependency_path: '${{ github.workspace }}/_data'
     - name: Install plumed latest
       uses: Iximiel/install-plumed@v1
       with:
@@ -74,6 +75,7 @@ jobs:
         version: 'master'
         repository: '${{ github.workspace }}/plumed2.git'
         suffix: '_master'
+        dependency_path: '${{ github.workspace }}/_data'
 
     - name: Build manual
       run: | 
