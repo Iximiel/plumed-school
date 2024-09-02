@@ -59,12 +59,22 @@ jobs:
         export PATH=/usr/lib/ccache:${PATH}
         ccache -s
         .ci/install.libtorch
-        # version=master or version=f123f12f3 to select a specific version
-        # pick newest release branch (alphabetic, will fail at v2.10)
-        CXX="mpic++" .ci/install.plumed version="$(cd plumed2.git ; git branch | sed "s/^ *//" | grep '^v2\.[0-9]$' | tail -n 1)" repo=$PWD/plumed2.git
-        # GB: in addition, we install master version as plumed_master
-        CXX="mpic++" .ci/install.plumed version=master suffix=_master repo=$PWD/plumed2.git
-        ccache -s
+    - name: Install plumed stable
+      uses: Iximiel/install-plumed@v1
+      with:
+        CC: 'mpicc'
+        CXX: 'mpic++'
+        version: $(cd ${{ github.workspace }}/plumed2.git ; git branch | sed "s/^ *//" | grep '^v2\.[0-9]$' | tail -n 1)
+        repository: '${{ github.workspace }}/plumed2.git'
+    - name: Install plumed latest
+      uses: Iximiel/install-plumed@v1
+      with:
+        CC: 'mpicc'
+        CXX: 'mpic++'
+        version: 'master'
+        repository: '${{ github.workspace }}/plumed2.git'
+        suffix: '_master'
+
     - name: Build manual
       run: | 
         python --version
