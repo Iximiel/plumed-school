@@ -47,6 +47,7 @@ jobs:
         echo "OMPI_MCA_btl=^openib" >> $GITHUB_ENV
 
     - name: Install software
+      id: install
       run: |
         sudo apt update
         sudo apt install mpi-default-bin mpi-default-dev
@@ -55,16 +56,27 @@ jobs:
         sudo apt-get update
         pip install -r requirements.txt
         git clone --bare https://github.com/plumed/plumed2.git
-        sudo ln -s ccache /usr/local/bin/mpic++
-        export PATH=/usr/lib/ccache:${PATH}
         ccache -s
         .ci/install.libtorch
-        # version=master or version=f123f12f3 to select a specific version
-        # pick newest release branch (alphabetic, will fail at v2.10)
-        CXX="mpic++" .ci/install.plumed version="$(cd plumed2.git ; git branch | sed "s/^ *//" | grep '^v2\.[0-9]$' | tail -n 1)" repo=$PWD/plumed2.git
-        # GB: in addition, we install master version as plumed_master
-        CXX="mpic++" .ci/install.plumed version=master suffix=_master repo=$PWD/plumed2.git
-        ccache -s
+        echo "stable_plumed=$(cd ${{ github.workspace }}/plumed2.git ; git branch | sed "s/^ *//" | grep '^v2\.[0-9]$' | tail -n 1)" >> $GITHUB_OUTPUT
+    - name: Install plumed stable
+      uses: Iximiel/install-plumed@v1
+      with:
+        CC: 'ccache mpicc'
+        CXX: 'ccache mpic++'
+        version: '${{ steps.install.outputs.stable_plumed }}'
+        repository: '${{ github.workspace }}/plumed2.git'
+        dependency_path: '${{ github.workspace }}/_data'
+    - name: Install plumed latest
+      uses: Iximiel/install-plumed@v1
+      with:
+        CC: 'ccache mpicc'
+        CXX: 'ccache mpic++'
+        version: 'master'
+        repository: '${{ github.workspace }}/plumed2.git'
+        suffix: '_master'
+        dependency_path: '${{ github.workspace }}/_data'
+
     - name: Build manual
       run: | 
         python --version
