@@ -158,7 +158,8 @@ def process_lesson(path,action_counts,plumed_syntax,eggdb=None,plumed_stable=PLU
     if not eggdb:
         eggdb=sys.stdout
 
-    with cd(path):
+    try:
+      with cd(path):
         # start timing
         start_time = time.perf_counter()
         # open file
@@ -261,6 +262,11 @@ def process_lesson(path,action_counts,plumed_syntax,eggdb=None,plumed_stable=PLU
         end_time = time.perf_counter()
         # store time
         print("  time: " + str(end_time-start_time), file=eggdb)
+    except Exception as e:
+      print("+++ EXCEPTION RAISED IN: ", path)
+      print("+++ EXCEPTION text:" , e)
+      return (path, e)
+    return None
 
 if __name__ == "__main__":
     nreplicas, replica, argv = 1, 0, sys.argv[1:]
@@ -300,6 +306,7 @@ if __name__ == "__main__":
         if key=="vimlink" or key=="replicalink" or key=="groups" : continue
         action_counts[key] = 0
     # loop over lesson for this replica
+    listOfErrors = []
     with open("_data/lessons" + str(replica) + ".yml","w") as eggdb:
         print("# file containing lesson database.",file=eggdb)
 
@@ -314,7 +321,15 @@ if __name__ == "__main__":
         # cycle on ordered list
         for path in sorted(pathlist, reverse=True, key=lambda m: str(m)):
             # process lesson
-            process_lesson(re.sub("lesson.yml$","",str(path)),action_counts,plumed_syntax,eggdb,plumed_stable=plumed_stable,plumed_master=plumed_master),
+            error=process_lesson(re.sub("lesson.yml$","",str(path)),action_counts,plumed_syntax,eggdb,plumed_stable=plumed_stable,plumed_master=plumed_master)
+            if error is not None :
+               listOfErrors.append(error)
+    if len(listOfErrors) > 0 :
+        for path,e in listOfErrors :
+           print("+++ EXCEPTION RAISED IN: ", path)
+           print("+++ EXCEPTION text:" , e)
+
+        raise Exception("Errors while compiling lessons")
     # output yaml file with action counts
     action_list = [] 
     for key, value in action_counts.items() : action_list.append( {'name': key, 'number': value } )
